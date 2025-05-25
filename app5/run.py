@@ -7,6 +7,6 @@ app = FastAPI(title="Bookstore API")
 
 app.include_router(book_router, prefix="/books", tags=["books"])
 
-@app.book_router("startup")
+@app.on_event("startup")
 async def on_startup():
     await init_db()

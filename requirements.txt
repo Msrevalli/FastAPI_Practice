@@ -3,3 +3,4 @@ uvicorn
 fastapi[standard]
 pydantic-settings
 sqlmodel
+asyncpg
