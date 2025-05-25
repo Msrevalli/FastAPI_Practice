@@ -133,6 +133,7 @@ celerybeat.pid
 env/
 venv/
 ENV/
+/fast_api
 env.bak/
 venv.bak/
 
