@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-class Book(BaseModel):
-    id: int
+
+class BookCreate(BaseModel):
     title: str
     author: str
     publisher: str
@@ -8,9 +8,13 @@ class Book(BaseModel):
     page_count: int
     language: str
 
-class BookUpdateModel(BaseModel):
+class BookRead(BookCreate):
+    id: int
+
+class BookUpdate(BaseModel):
     title: str
     author: str
     publisher: str
+    published_date: str
     page_count: int
     language: str
