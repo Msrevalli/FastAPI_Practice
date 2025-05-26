@@ -1,149 +1,87 @@
-## 📘 Overview
+### ✅ 1. **Swagger UI (Interactive API Docs)**
 
-This is a **simple CRUD API** for managing users using FastAPI. It supports:
+When you run your FastAPI app, go to:
 
-* **Create** user
-* **Read** all users
-* **Update** user by number
-* **Delete** user by number
+```
+http://localhost:8000/docs
+```
 
-The app uses **in-memory storage** (`users` list), so all data is lost when the server restarts.
+This opens the **Swagger UI**, where you can:
+
+* View all endpoints
+* Submit requests via UI forms (no coding needed)
+* Test `POST`, `PUT`, `PATCH`, and `DELETE` with body inputs
+
+If you want the alternative ReDoc view:
+
+```
+http://localhost:8000/redoc
+```
 
 ---
 
-## 📦 Imports
+### ✅ 2. **cURL Commands (Command Line)**
 
-```python
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List
+#### ➕ Create a user (POST)
+
+```bash
+curl -X POST "http://localhost:8000/users/" \
+-H "Content-Type: application/json" \
+-d '{"name": "Alice", "age": 30}'
 ```
 
-* `FastAPI`: Used to create the API app.
-* `HTTPException`: Used to return proper HTTP error codes.
-* `BaseModel`: Used to define the data schema for request/response validation.
-* `List`: Used for typing a list of `UserSchema` in response.
+#### 📥 Get all users (GET)
+
+```bash
+curl http://localhost:8000/users/
+```
+
+#### 📤 Get user by ID (GET)
+
+```bash
+curl http://localhost:8000/users/<user_id>
+```
+
+#### ♻️ Replace user (PUT)
+
+```bash
+curl -X PUT "http://localhost:8000/users/<user_id>" \
+-H "Content-Type: application/json" \
+-d '{"name": "Alice Smith", "age": 31}'
+```
+
+#### 🔧 Partially update user (PATCH)
+
+```bash
+curl -X PATCH "http://localhost:8000/users/<user_id>" \
+-H "Content-Type: application/json" \
+-d '{"age": 32}'
+```
+
+#### ❌ Delete user (DELETE)
+
+```bash
+curl -X DELETE "http://localhost:8000/users/<user_id>"
+```
 
 ---
 
-## 🚀 App Setup
+### ✅ 3. **Postman Setup**
 
-```python
-app = FastAPI()
-```
+If you prefer using Postman:
 
-Initializes the FastAPI app.
-
----
-
-## 🧾 User Schema
-
-```python
-class UserSchema(BaseModel):
-    name: str
-    no: int
-```
-
-Defines what a **user** looks like:
-
-* `name`: User's name (string)
-* `no`: A unique number (integer)
-
----
-
-## 📚 In-Memory Storage
-
-```python
-users = []
-```
-
-Stores all users in a Python list. This is **temporary** storage and **not persistent**.
-
----
-
-## 🔨 Endpoints
-
-### ✅ Create User
-
-```python
-@app.post("/createuser/")
-def create_user(user: UserSchema):
-    for u in users:
-        if u["no"] == user.no:
-            raise HTTPException(status_code=400, detail="User with this number already exists")
-    users.append(user.dict())
-    return {"message": "New user added successfully"}
-```
-
-* Accepts a `UserSchema` object from the client.
-* Checks if a user with the same `no` already exists.
-* If not, adds the user.
-* Returns a success message.
-
-### 📋 Get All Users
-
-```python
-@app.get("/allusers/", response_model=List[UserSchema])
-def all_users():
-    return users
-```
-
-* Returns the entire list of users.
-* Uses `response_model=List[UserSchema]` to validate and format the response.
-
-### 🔁 Update User
-
-```python
-@app.put("/updateuser/{user_no}")
-def update_user(user_no: int, updated_user: UserSchema):
-    for index, user in enumerate(users):
-        if user["no"] == user_no:
-            users[index] = updated_user.dict()
-            return {"message": "User updated successfully"}
-    raise HTTPException(status_code=404, detail="User not found")
-```
-
-* Searches for a user by `user_no` in the path.
-* If found, updates their information with the new data.
-* If not found, returns `404`.
-
-### ❌ Delete User
-
-```python
-@app.delete("/deleteuser/{user_no}")
-def delete_user(user_no: int):
-    for index, user in enumerate(users):
-        if user["no"] == user_no:
-            users.pop(index)
-            return {"message": "User deleted successfully"}
-    raise HTTPException(status_code=404, detail="User not found")
-```
-
-* Looks for the user by `user_no`.
-* Removes the user from the list if found.
-* Otherwise returns a `404`.
-
----
-
-## 🧪 Example Input
-
-**POST `/createuser/`**
+1. Set method: `POST`, `GET`, etc.
+2. URL: `http://localhost:8000/users/`
+3. Body tab → Choose `raw` and `JSON`
+4. Add JSON data, e.g.:
 
 ```json
 {
-  "name": "Alice",
-  "no": 1
+  "name": "Charlie",
+  "age": 22
 }
 ```
 
 ---
 
-## ⚠️ Notes
-
-* The data will reset on every server restart.
-* No database is used (just a Python list).
-* Duplicate `no` values are not allowed.
-* `no` is treated as a unique identifier.
-
----
 

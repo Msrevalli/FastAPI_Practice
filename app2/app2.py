@@ -1,40 +1,75 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+from uuid import UUID, uuid4
 
 app = FastAPI()
 
-class UserSchema(BaseModel):
+# Base model for user input (no id needed from client)
+class UserIn(BaseModel):
     name: str
-    no: int
+    age: Optional[int] = None
 
-users = []  # In-memory storage
+# Full user model (id included)
+class User(UserIn):
+    id: UUID
 
-@app.post("/createuser/")
-def create_user(user: UserSchema):
-    # Check for duplicates
-    for u in users:
-        if u["no"] == user.no:
-            raise HTTPException(status_code=400, detail="User with this number already exists")
-    users.append(user.dict())
-    return {"message": "New user added successfully"}
+# Partial update model for PATCH
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
 
-@app.get("/allusers/", response_model=List[UserSchema])
-def all_users():
-    return users
+# In-memory storage
+users_db: List[User] = []
 
-@app.put("/updateuser/{user_no}")
-def update_user(user_no: int, updated_user: UserSchema):
-    for index, user in enumerate(users):
-        if user["no"] == user_no:
-            users[index] = updated_user.dict()
-            return {"message": "User updated successfully"}
+# Create user (POST) - body param
+@app.post("/users/", response_model=User)
+async def create_user(user: UserIn):
+    new_user = User(id=uuid4(), **user.dict())
+    users_db.append(new_user)
+    return new_user
+
+# Get all users (GET)
+@app.get("/users/", response_model=List[User])
+async def get_all_users():
+    return users_db
+
+# Get a user by ID (GET)
+@app.get("/users/{user_id}", response_model=User)
+async def get_user(user_id: UUID):
+    for user in users_db:
+        if user.id == user_id:
+            return user
     raise HTTPException(status_code=404, detail="User not found")
 
-@app.delete("/deleteuser/{user_no}")
-def delete_user(user_no: int):
-    for index, user in enumerate(users):
-        if user["no"] == user_no:
-            users.pop(index)
-            return {"message": "User deleted successfully"}
+# Replace a user (PUT) - full body
+@app.put("/users/{user_id}", response_model=User)
+async def replace_user(user_id: UUID, user_data: UserIn):
+    for idx, user in enumerate(users_db):
+        if user.id == user_id:
+            updated_user = User(id=user_id, **user_data.dict())
+            users_db[idx] = updated_user
+            return updated_user
+    raise HTTPException(status_code=404, detail="User not found")
+
+# Partially update a user (PATCH) - partial body
+@app.patch("/users/{user_id}", response_model=User)
+async def update_user(user_id: UUID, user_update: UserUpdate):
+    for idx, user in enumerate(users_db):
+        if user.id == user_id:
+            user_dict = user.dict()
+            update_fields = user_update.dict(exclude_unset=True)
+            user_dict.update(update_fields)
+            updated_user = User(**user_dict)
+            users_db[idx] = updated_user
+            return updated_user
+    raise HTTPException(status_code=404, detail="User not found")
+
+# Delete a user (DELETE)
+@app.delete("/users/{user_id}")
+async def delete_user(user_id: UUID):
+    for idx, user in enumerate(users_db):
+        if user.id == user_id:
+            users_db.pop(idx)
+            return {"detail": "User deleted"}
     raise HTTPException(status_code=404, detail="User not found")

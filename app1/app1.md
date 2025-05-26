@@ -1,34 +1,24 @@
-````markdown
-# 🚀 FastAPI Greeting App
+FastAPI code defines two endpoints—one for the root (`/`) and another for greeting a user using both **path** and **query** parameters. 
 
-A minimal FastAPI application that returns a welcome message and greets users by name.
+---
+### 🔍 Explanation:
 
-* Visit: `http://127.0.0.1:8000`
-
-## 📘 API Endpoints
-
-| Method | Endpoint             | Description                  |
-| ------ | -------------------- | ---------------------------- |
-| GET    | `/`                  | Returns a welcome message    |
-| GET    | `/greet/{user_name}` | Returns a greeting with name |
-
-### 🧪 Example
-
-* `GET /`
-  **Response:**
-  `"Welocme"`
-
-* `GET /greet/Alice`
-  **Response:**
-
-  ```json
-  {
-    "message": "Hello Alice"
-  }
-  ```
-
-```
+* `user_name` is a **path parameter** (e.g., `/greet/Alice`)
+* `age` is a **query parameter** (e.g., `/greet/Alice?age=25`, optional with default `0`)
+* The root route `/` returns a simple welcome message
 
 ---
 
-```
+### 🔧 Example Requests:
+
+* `GET http://localhost:8000/`
+  → `{"message": "Welcome"}`
+
+* `GET http://localhost:8000/greet/Alice`
+  → `{"message": "Hello Alice, you are 0 years old."}`
+
+* `GET http://localhost:8000/greet/Bob?age=35`
+  → `{"message": "Hello Bob, you are 35 years old."}`
+
+---
+
