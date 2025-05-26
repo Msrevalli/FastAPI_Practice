@@ -1,12 +1,13 @@
+# Inside main.py title
 from fastapi import FastAPI
 from src.books.routes import book_router
-from src.db import init_db
-import asyncio
 
-app = FastAPI(title="Bookstore API")
+version = 'v1'
 
-app.include_router(book_router, prefix="/books", tags=["books"])
+app = FastAPI(
+    title='Bookly',
+    description='A RESTful API for a book review web service',
+    version=version,
+)
 
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
+app.include_router(book_router,prefix=f"/api/{version}/books", tags=['books'])
