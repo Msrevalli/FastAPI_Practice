@@ -3,11 +3,11 @@
 ```
 bookstore/
 │
-├── run.py                   # Entry point of the FastAPI app
+├                
 ├── requirements.txt         # Lists dependencies like FastAPI and Uvicorn
 │
 ├── src/                     # Source code directory
-│   ├── __init__.py          # Makes `src` a Python package
+│   ├── __init__.py          # Makes `src` a Python package and  Entry point of the FastAPI app
 │   ├── books/               # Book module
 │   │   ├── __init__.py      # Makes `books` a Python subpackage
 │   │   ├── routes.py        # Contains route definitions (endpoints)
@@ -17,23 +17,10 @@ bookstore/
 
 ---
 
-### ✅ `run.py`
-
-This is the **entry point** of your application. It creates a FastAPI instance and registers the router for book-related operations.
-
-```python
-from fastapi import FastAPI
-from src.books.routes import book_router
-
-app = FastAPI()
-
-app.include_router(book_router, prefix="/api")
-```
-
 You run the app using:
 
 ```bash
-uvicorn run:app --reload
+fastapi dev src\
 ```
 
 ---
@@ -78,37 +65,6 @@ books = [
 ]
 ```
 
-You can later replace this with a real database like PostgreSQL or SQLite.
-
----
-
-### ✅ `requirements.txt`
-
-Lists project dependencies:
-
-```
-fastapi
-uvicorn
-```
-
-To install them:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 🧪 How to Run the App
-
-Use Uvicorn (ASGI server) to launch the app:
-
-```bash
-uvicorn run:app --reload
-```
-
-* `--reload` enables live reloading on code changes.
-* Access Swagger UI at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
